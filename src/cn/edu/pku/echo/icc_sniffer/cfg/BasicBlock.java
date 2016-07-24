@@ -1,26 +1,54 @@
-package cn.edu.pku.echo.icc_sniffer.analysis;
+package cn.edu.pku.echo.icc_sniffer.cfg;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.googlecode.d2j.DexLabel;
+import com.googlecode.d2j.Method;
 import com.googlecode.d2j.node.insn.BaseSwitchStmtNode;
 import com.googlecode.d2j.node.insn.DexStmtNode;
 import com.googlecode.d2j.node.insn.JumpStmtNode;
 import com.googlecode.d2j.node.insn.DexLabelStmtNode;
 import com.googlecode.d2j.visitors.DexCodeVisitor;
 
+import cn.edu.pku.echo.icc_sniffer.analysis.AnalysisResult;
+import cn.edu.pku.echo.icc_sniffer.analysis.ConstAnalysisResult;
+
 public class BasicBlock {
 	private int id;
 	public List<DexStmtNode> insn;
 	public Set<DexLabel> sucLabels;
+	public ConstAnalysisResult preResult;
+	public ConstAnalysisResult sucResult;
 
-	public BasicBlock(int id) {
+	public BasicBlock(int id, int totalRegister) {
 		this.setId(id);
 		insn = new ArrayList<DexStmtNode>();
 		sucLabels = new HashSet<DexLabel>();
+		preResult = new ConstAnalysisResult(totalRegister);
+		sucResult = new ConstAnalysisResult(totalRegister);
+	}
+	
+	public boolean execute(Map<Method, AnalysisResult> const_args_map) {
+//		System.out.println("execute block id: " + this.id
+//				+ " insn number: " + insn.size() + " status: " + sucResult.values.size());
+//		if (this.id == 528) {
+//			System.out.println("###########PreResult###########");
+//			preResult.printResult();
+//		}
+//		System.out.println("###########SucResult###########");
+//		sucResult.printResult();
+		ConstAnalysisResult curResult = new ConstAnalysisResult(preResult);
+		curResult.const_args_map = const_args_map;
+		for (DexStmtNode dsn : insn) {
+			curResult.merge(dsn);
+		}
+		boolean ret = curResult.equals(sucResult);
+		sucResult = curResult;
+		return ret;
 	}
 
 	public void addInsn(DexStmtNode dsn) {

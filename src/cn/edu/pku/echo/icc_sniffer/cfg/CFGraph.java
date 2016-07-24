@@ -1,4 +1,4 @@
-package cn.edu.pku.echo.icc_sniffer.analysis;
+package cn.edu.pku.echo.icc_sniffer.cfg;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -139,13 +139,13 @@ public abstract class CFGraph implements DexConstants {
 
 			if (current.canContinue())
 				addPreAndSuc(current, basicBlocks.get(i + 1));
-			if (current.canThrow()) {
-				// TODO consider the try catch types.
-				addPreAndSuc(current, lastBlock);
-				if (currentTryCatch != null)
-					for (DexLabel l : currentTryCatch.handler)
-						addPreAndSuc(current, getBBByLable(l));
-			}
+//			if (current.canThrow()) {
+//				// TODO consider the try catch types.
+//				addPreAndSuc(current, lastBlock);
+//				if (currentTryCatch != null)
+//					for (DexLabel l : currentTryCatch.handler)
+//						addPreAndSuc(current, getBBByLable(l));
+//			}
 			if (current.canReturn())
 				addPreAndSuc(current, lastBlock);
 			if (current.canBranch() || current.canSwitch()) {
@@ -170,7 +170,7 @@ public abstract class CFGraph implements DexConstants {
 
 	}
 
-	protected Set<BasicBlock> getNotNullSet(BasicBlock pre,
+	public Set<BasicBlock> getNotNullSet(BasicBlock pre,
 			Map<BasicBlock, Set<BasicBlock>> map) {
 		Set<BasicBlock> ret;
 		if (map.containsKey(pre))
@@ -188,7 +188,7 @@ public abstract class CFGraph implements DexConstants {
 			return true;
 		if (dsn.op != null)
 			return dsn.op.canBranch() || dsn.op.canReturn()
-					|| dsn.op.canSwitch() || dsn.op.canThrow();
+					|| dsn.op.canSwitch();
 		return false;
 	}
 

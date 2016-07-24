@@ -6,7 +6,7 @@ public abstract class AnalysisResult {
 	public AnalysisResult() {
 	}
 
-	public abstract AnalysisResult merge(DexStmtNode insn);
+	public abstract void merge(DexStmtNode insn);
 
 	public abstract void printResult();
 
